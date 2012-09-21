@@ -1,0 +1,1 @@
+OSC.js is a library for organizing modules or pieces of code using the mediator pattern and OSC style messages.
