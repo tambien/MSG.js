@@ -5,7 +5,7 @@ setTimeout and requestAnimationFrame cannot. It is well-suited for scheduling au
 
 Features include:
  * audio rate scheduler for time crucial messages (using Web Audio API)
- * callback is invoked shortly before it is scheduled and includes the exact scheduling time (relative to audio context's currentTime);
+ * callback is invoked shortly before it is scheduled and includes the exact scheduling time
  * OSC-style pattern matching
  * relative and absolute timetags
 
