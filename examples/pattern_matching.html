@@ -1,0 +1,28 @@
+<!DOCTYPE HTML>
+<head>
+	<title>BASIC OSC MESSAGE</title>
+	<script type="text/javascript" charset="UTF-8" src="../src/odot.js"></script>
+</head>
+<body>
+	<script type="text/javascript">
+		//make some osc messages
+		var msg1 = new o.msg({
+			timetag : "1",
+			address : "/beat/1",
+			data : [1],
+		});
+		//make some osc messages
+		var msg2 = new o.msg({
+			timetag : "2",
+			address : "/beat/2",
+			data : [2],
+		});
+		//route anything after the slash
+		o.route ("/beat/*", function(msg, timetag){
+			document.getElementById("beatNumber").innerHTML = msg.data[0];
+		})
+	</script>
+	<div>
+		<div style='float:left'>Beat Number: </div><div id='beatNumber'>0</div>
+	</div>
+</body>

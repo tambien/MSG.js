@@ -1,0 +1,76 @@
+<!DOCTYPE HTML>
+<head>
+	<title>MATCHING TEST</title>
+	<script type="text/javascript" charset="UTF-8" src="../src/odot.js"></script>
+</head>
+<body>
+	<script type="text/javascript">
+		//make some osc messages
+		var msg1 = new o.msg({
+			address : "/beat/1",
+		});
+		var msg2 = new o.msg({
+			address : "/beat/2",
+		});
+		var msg3 = new o.msg({
+			address : "/beat/3",
+		});
+		var msg4 = new o.msg({
+			address : "/beat/4",
+		});
+		o.route("/beat/*", function(msg) {
+			if(msg.address === "/beat/1") {
+				testPass();
+			}
+			if(msg.address === "/beat/2") {
+				testPass();
+			}
+			if(msg.address === "/beat/3") {
+				testPass();
+			}
+			if(msg.address === "/beat/4") {
+				testPass();
+			}
+		})
+		o.route("/*/1", function(msg) {
+			if(msg.address === "/beat/1") {
+				testPass();
+			} else {
+				testFail();
+			}
+		})
+		o.route("/*/*", function(msg) {
+			if(msg.address === "/beat/1") {
+				testPass();
+			}
+			if(msg.address === "/beat/2") {
+				testPass();
+			}
+			if(msg.address === "/beat/3") {
+				testPass();
+			}
+			if(msg.address === "/beat/4") {
+				testPass();
+			}
+		})
+		o.route("/*/[1-2]", function(msg) {
+			if(msg.address === "/beat/1") {
+				testPass();
+			} else if(msg.address === "/beat/2") {
+				testPass();
+			} else {
+				testFail();
+			}
+		})
+		function testFail() {
+			console.error('test failed');
+		}
+
+		function testPass() {
+			console.log("testPass");
+		}
+	</script>
+	<div>
+		<div></div>
+	</div>
+</body>

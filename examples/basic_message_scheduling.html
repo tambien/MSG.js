@@ -1,0 +1,20 @@
+<!DOCTYPE HTML>
+<head>
+	<title>BASIC OSC MESSAGE</title>
+	<script type="text/javascript" charset="UTF-8" src="../src/odot.js"></script>
+</head>
+<body>
+	<script type="text/javascript">
+		//make an osc message
+		var msg = new o.msg({
+			timetag : "5.0",
+			address : "/hello",
+		});
+		
+		o.route ("/hello", function(msg, timetag){
+			alert("timetag = "+timetag);
+		})
+	</script>
+	Schedule an alert at 5 seconds.
+	
+</body>

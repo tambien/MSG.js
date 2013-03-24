@@ -9,4 +9,4 @@ OSC.route("/address", callback);
 OSC.send("/pattern", data);
 
 //sends pattern at a specific time
-OSC.schedule("/pattern", time);
+OSC.schedule(time, "/pattern", data);
