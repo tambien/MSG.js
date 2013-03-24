@@ -1,12 +1,31 @@
-OSC.js is a library for organizing modules within large applications using the publish/subscribe pattern and OSC-style communication.
+odot.js is an OSC-style mediator pattern with audio-rate scheduling for time-critical message passing.
 
-The pub/sub pattern promotes loose coupling of modules by keeping parts of the code from referring to other parts explicitly, but instead interaction is mediated through a central object. OSC.js builds on this idea by putting OSC-style addresses, routing, and scheduling into the mediator making the interaction between modules simpler and more powerful. 
+Using Web Audio as the timing scheduler, odot.js achieves scheduling consistency and accuracy which 
+setTimeout and requestAnimationFrame cannot. It is perfect for scheduling audio events (or any events).  
 
-//subscribe to an address
-OSC.route("/address", callback);
+Features include:
+ * audio rate scheduler for time crucial messages (using Web Audio API)
+ * callback is invoked shortly before it is scheduled and includes the exact scheduling time (relative to audio context's currentTime);
+ * OSC-style pattern matching
+ * relative and absolute timetags
 
-//publish a message
-OSC.send("/pattern", data);
 
-//sends pattern at a specific time
-OSC.schedule(time, "/pattern", data);
+Creating a message automatically adds it to the scheduler to be invoked right before the timetag
+<code>
+var msg = new o.msg({
+	address : "/soundEffect/splat",
+	//timetags are in seconds relative to the start of the audio context
+	timetag : 10,
+	//add any data to the message
+	data : "splat.wav",
+});
+</code>
+
+In another part of your code, listen for that message. Use OSC-style pattern matching. 
+
+<code>
+//'*' matches any string
+o.route("/soundEffect/*", function(msg){
+	playSound(msg.data, msg.timetag);
+});
+</code>

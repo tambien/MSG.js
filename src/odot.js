@@ -116,8 +116,8 @@
 	o.msg = function(args) {
 		//messages must have an address
 		this.address = args.address || console.error("the message needs an address");
-		//the data array
-		this.data = args.data || [];
+		//the data
+		this.data = args.data;
 		//handle the timetag
 		var timetag = args.timetag;
 		//if it's a number, that's the timetag
@@ -145,13 +145,9 @@
 		//invokes the callback if the address matches the pattern
 		match : function(pattern, callback) {
 			if(pattern.test(this.address)) {
-				callback(this, this.timetag);
+				callback(this);
 				return true;
 			}
-		},
-		//add data to the message
-		add : function(d) {
-			this.data.push(d);
 		},
 		//sets the timetag of an existing msg
 		setTimetag : function(timetag) {
