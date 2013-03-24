@@ -91,10 +91,8 @@
 		}
 	};
 
-	//i'm sure there is a way to do this all with regexp, but this is simpler
+	//translates OSC regular expressions to RegExp
 	function regExpFromPattern(pattern) {
-		var patternArray = pattern.split("/");
-
 		//translate osc-style patterns into RegExp
 		pattern = pattern.replace("*", ".+");
 		pattern = pattern.replace('{', "(");
@@ -103,7 +101,7 @@
 		pattern = pattern.replace('?', '.');
 		//match '!' only if after '['
 		pattern = pattern.replace('[!', '[^');
-		//add the end-of-line to the pattern so that it doesn't keep matching
+		//add the end-of-line to the pattern so that it stops matching
 		pattern += '$';
 		var regExp = new RegExp(pattern);
 		return regExp;
