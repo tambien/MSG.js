@@ -11,7 +11,8 @@ Features include:
 
 
 Creating a message automatically adds it to the scheduler to be invoked right before the timetag
-`````javascript
+```javascript
+
 var msg = new o.msg({
 	address : "/soundEffect/splat",
 	//timetags are in seconds relative to the start of the audio context
@@ -19,13 +20,13 @@ var msg = new o.msg({
 	//add any data to the message
 	data : "splat.wav",
 });
-`````
+```
 
 In another part of your code, listen for that message. Use OSC-style pattern matching. 
 
-`````javascript
+```javascript
 //'*' matches any string
 o.route("/soundEffect/*", function(msg){
 	playSound(msg.data, msg.timetag);
 });
-`````
+```
