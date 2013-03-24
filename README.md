@@ -1,7 +1,7 @@
 odot.js is an OSC-style mediator pattern with audio-rate scheduling for time-critical message passing.
 
-Using Web Audio as the timing scheduler, odot.js achieves scheduling consistency and accuracy which 
-setTimeout and requestAnimationFrame cannot. It is perfect for scheduling audio events (or any events).  
+Using Web Audio as the scheduler, odot.js achieves timing consistency and accuracy which 
+setTimeout and requestAnimationFrame cannot. It is well-suited for scheduling audio events.  
 
 Features include:
  * audio rate scheduler for time crucial messages (using Web Audio API)
@@ -12,7 +12,6 @@ Features include:
 
 Creating a message automatically adds it to the scheduler to be invoked right before the timetag
 ```javascript
-
 var msg = new o.msg({
 	address : "/soundEffect/splat",
 	//timetags are in seconds relative to the start of the audio context
@@ -22,11 +21,18 @@ var msg = new o.msg({
 });
 ```
 
-In another part of your code, listen for that message. Use OSC-style pattern matching. 
-
+In another part of your code, listen for that message using OSC-style pattern matching.  
 ```javascript
-//'*' matches any string
+//'/*' matches any address string
 o.route("/soundEffect/*", function(msg){
 	playSound(msg.data, msg.timetag);
+});
+```
+
+Relative timetags begin with "+",
+```javascript
+var msg = new o.msg({
+	address : "/in_a_second",
+	timetag : "+1",
 });
 ```
