@@ -47,18 +47,25 @@
 	function sortScheduledMsgs() {
 		scheduledMsgs.sort(function(a, b) {
 			//if the timetags are the same, go by priority
-			var diff = a.timetag - b.timetag;
-			if(diff === 0) {
-				return a.priority - b.priority;
-			} else {
-				return diff;
-			}
+			return a.timetag - b.timetag;
 		});
 	};
 
 	function schedule(msg) {
-		scheduledMsgs.push(msg);
-		sortScheduledMsgs();
+		//insert the message in the right position
+		var insertIndex = 0;
+		var len = scheduledMsgs.length;
+		while(insertIndex < len) {
+			var testMsg = scheduledMsgs[insertIndex];
+			if(testMsg.timetag > msg.timetag) {
+				//scheduledMsgs.splice(m - 1, 0, msg);
+				break;
+			}
+			insertIndex++;
+		}
+		scheduledMsgs.splice(insertIndex - 1, 0, msg);
+		//scheduledMsgs.push(msg);
+		//sortScheduledMsgs();
 	};
 
 	/**************************************************************************
@@ -134,7 +141,6 @@
 			//otherwise it's 0
 			this.timetag = 0;
 		}
-		this.priority = args.priority || 0;
 		//add the message to the scheduler
 		schedule(this);
 	};
@@ -153,17 +159,5 @@
 			//sort the scheduledMessages
 			sortScheduledMsgs();
 		},
-		//places a message after another message
-		after : function(msg) {
-			this.priority = msg.priority + 1;
-			//sort the scheduledMessages
-			sortScheduledMsgs();
-		},
-		//places a message before another message
-		before : function(msg) {
-			this.priority = msg.priority - 1;
-			//sort the scheduledMessages
-			sortScheduledMsgs();
-		}
 	};
 }());
