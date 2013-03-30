@@ -10,13 +10,20 @@
 
 	//create an audio context in the window
 	//should do this in some future proof way
+	/*
+	if( typeof AudioContext == "function") {
+		var audioContext = new AudioContext();
+	} else if( typeof webkitAudioContext == "function") {
+		var audioContext = new webkitAudioContext();
+	}
+	*/
 	window.audioContext = window.audioContext || new webkitAudioContext();
 	var audioContext = window.audioContext;
 
 	//some audio globals
 	var sampleRate = audioContext.sampleRate;
-	//this buffer size yeilds ~6ms accurate timer at 44100 sample rate
-	var bufferSize = 256;
+	//this buffer size yeilds ~12ms accurate timer at 44100 sample rate
+	var bufferSize = 512;
 	var bufferTime = bufferSize / sampleRate;
 
 	//the odot object
@@ -57,13 +64,13 @@
 		var len = scheduledMsgs.length;
 		while(insertIndex < len) {
 			var testMsg = scheduledMsgs[insertIndex];
-			if(testMsg.timetag > msg.timetag) {
+			if(testMsg.timetag >= msg.timetag) {
 				//scheduledMsgs.splice(m - 1, 0, msg);
 				break;
 			}
 			insertIndex++;
 		}
-		scheduledMsgs.splice(insertIndex - 1, 0, msg);
+		scheduledMsgs.splice(insertIndex, 0, msg);
 		//scheduledMsgs.push(msg);
 		//sortScheduledMsgs();
 	};

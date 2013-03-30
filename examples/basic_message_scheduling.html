@@ -11,8 +11,8 @@
 			address : "/hello",
 		});
 		
-		o.route ("/hello", function(msg, timetag){
-			alert("timetag = "+timetag);
+		o.route ("/hello", function(msg){
+			alert("timetag = "+msg.timetag);
 		})
 	</script>
 	Schedule an alert at 5 seconds.
