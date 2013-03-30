@@ -1,4 +1,4 @@
-odot.js is an OSC-style mediator pattern with audio-rate scheduling for time-critical message passing.
+oMSG.js is an OSC-style mediator pattern with audio-rate scheduling for time-critical message passing.
 
 Using Web Audio as the scheduler, odot.js achieves timing consistency and accuracy which 
 setTimeout and requestAnimationFrame cannot. It is well-suited for scheduling audio events.  
@@ -8,7 +8,7 @@ Features include:
  * callback is invoked shortly before it is scheduled and includes the exact scheduling time
  * OSC-style pattern matching
  * relative and absolute timetags
-
+ 
 
 Creating a message automatically adds it to the scheduler to be invoked right before the timetag
 ```javascript

@@ -9,15 +9,12 @@
 ( function() {
 
 	//create an audio context in the window
-	//should do this in some future proof way
-	/*
 	if( typeof AudioContext == "function") {
-		var audioContext = new AudioContext();
+		var ac = new AudioContext();
 	} else if( typeof webkitAudioContext == "function") {
-		var audioContext = new webkitAudioContext();
+		var ac = new webkitAudioContext();
 	}
-	*/
-	window.audioContext = window.audioContext || new webkitAudioContext();
+	window.audioContext = window.audioContext || ac;
 	var audioContext = window.audioContext;
 
 	//some audio globals
@@ -50,13 +47,6 @@
 			match(msg);
 		}
 	};
-	//the scheduledMsgs sort function to maintain the priority queue
-	function sortScheduledMsgs() {
-		scheduledMsgs.sort(function(a, b) {
-			//if the timetags are the same, go by priority
-			return a.timetag - b.timetag;
-		});
-	};
 
 	function schedule(msg) {
 		//insert the message in the right position
@@ -71,8 +61,6 @@
 			insertIndex++;
 		}
 		scheduledMsgs.splice(insertIndex, 0, msg);
-		//scheduledMsgs.push(msg);
-		//sortScheduledMsgs();
 	};
 
 	/**************************************************************************
@@ -159,12 +147,6 @@
 				callback(this);
 				return true;
 			}
-		},
-		//sets the timetag of an existing msg
-		setTimetag : function(timetag) {
-			this.timetag = timetag;
-			//sort the scheduledMessages
-			sortScheduledMsgs();
 		},
 	};
 }());
