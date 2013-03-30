@@ -6,12 +6,12 @@
 <body>
 	<script type="text/javascript">
 		//make an osc message
-		var msg = new o.msg({
+		MSG.schedule({
 			timetag : "5.0",
 			address : "/hello",
 		});
 		
-		o.route ("/hello", function(msg){
+		MSG.route ("/hello", function(msg){
 			alert("timetag = "+msg.timetag);
 		})
 	</script>

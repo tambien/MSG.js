@@ -1,6 +1,6 @@
 oMSG.js is an OSC-style mediator pattern with audio-rate scheduling for time-critical message passing.
 
-Using Web Audio as the scheduler, odot.js achieves timing consistency and accuracy which 
+Using Web Audio as the scheduler, oMSG.js achieves timing consistency and accuracy which 
 setTimeout and requestAnimationFrame cannot. It is well-suited for scheduling audio events.  
 
 Features include:
@@ -10,9 +10,9 @@ Features include:
  * relative and absolute timetags
  
 
-Creating a message automatically adds it to the scheduler to be invoked right before the timetag
+Scheduled messages must have an address. If no timetag is given, it defaults to 0, which means invoke immediately.  
 ```javascript
-var msg = new o.msg({
+MSG.schedule({
 	address : "/soundEffect/splat",
 	//timetags are in seconds relative to the start of the audio context
 	timetag : 10,
@@ -24,14 +24,14 @@ var msg = new o.msg({
 In another part of your code, listen for that message using OSC-style pattern matching.  
 ```javascript
 //'/*' matches any address string
-o.route("/soundEffect/*", function(msg){
+MSG.route("/soundEffect/*", function(msg){
 	playSound(msg.data, msg.timetag);
 });
 ```
 
 Relative timetags begin with "+",
 ```javascript
-var msg = new o.msg({
+MSG.schedule({
 	address : "/in_a_second",
 	timetag : "+1",
 });

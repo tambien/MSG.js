@@ -1,5 +1,5 @@
 /*
- * odot
+ * oMSG
  *
  * OSC-style mediator pattern
  * audio rate scheduler for time crucial messages
@@ -24,17 +24,17 @@
 	var bufferTime = bufferSize / sampleRate;
 
 	//the odot object
-	window.o = window.o || {};
+	window.MSG = window.MSG || {};
 
 	/**************************************************************************
-	 SCHEDULING
+	 SCHEDULER
 	 *************************************************************************/
 
 	//the priority queue of scheduled msgs
 	var scheduledMsgs = [];
 
 	//the jsnode which does the schedule loop
-	var scheduler = o.scheduler = audioContext.createJavaScriptNode(bufferSize, 1, 1);
+	var scheduler = audioContext.createJavaScriptNode(bufferSize, 1, 1);
 	scheduler.connect(audioContext.destination);
 	//the scheduler loop
 	var schedulerLoop = scheduler.onaudioprocess = function(event) {
@@ -48,7 +48,9 @@
 		}
 	};
 
-	function schedule(msg) {
+	MSG.schedule = function(msg) {
+		//make sure the message is formatted correctly
+		parseMsg(msg);
 		//insert the message in the right position
 		var insertIndex = 0;
 		var len = scheduledMsgs.length;
@@ -62,7 +64,6 @@
 		}
 		scheduledMsgs.splice(insertIndex, 0, msg);
 	};
-
 	/**************************************************************************
 	 ROUTING
 	 *************************************************************************/
@@ -72,7 +73,7 @@
 
 	//the route function adds a listener to a pattern
 	//and invokes the callback when a msg matching that pattern is scheduled
-	o.route = function(pattern, callback) {
+	MSG.route = function(pattern, callback) {
 		//add a listener to the queue
 		var router = {
 			pattern : regExpFromPattern(pattern),
@@ -82,14 +83,16 @@
 		return router;
 	};
 	//remove a route from the list
-	o.unroute = function(pattern, callback) {
+	MSG.unroute = function(pattern, callback) {
 
 	}
 	//the match function called by the scheduler when a msgs is invoked
 	function match(msg) {
 		for(var r = 0, len = routes.length; r < len; r++) {
 			var router = routes[r];
-			msg.match(router.pattern, router.callback);
+			if(router.pattern.test(msg.address)) {
+				router.callback(msg);
+			}
 		}
 	};
 
@@ -110,43 +113,30 @@
 	};
 
 	/**************************************************************************
-	 MSG
+	 MSG PARSER
 	 *************************************************************************/
 
-	o.msg = function(args) {
+	//make sure all of the fields are in order
+	function parseMsg(msg) {
 		//messages must have an address
-		this.address = args.address || console.error("the message needs an address");
-		//the data
-		this.data = args.data;
+		if(!msg.address) {
+			console.error("the message needs an address");
+		}
 		//handle the timetag
-		var timetag = args.timetag;
-		//if it's a number, that's the timetag
-		if( typeof timetag === 'number') {
-			this.timetag = timetag;
-		} else if( typeof timetag === 'string') {
+		var timetag = msg.timetag;
+		//if it's a string
+		if( typeof timetag === 'string') {
 			//it could be a relative value: "+1.2"
 			if(timetag.charAt(0) === "+") {
 				var num = timetag.slice(1);
-				this.timetag = audioContext.currentTime + parseFloat(num);
+				msg.timetag = audioContext.currentTime + parseFloat(num);
 			} else {
 				//or just a number as a string
-				this.timetag = parseFloat(timetag);
+				msg.timetag = parseFloat(timetag);
 			}
-		} else {
+		} else if( typeof timetag !== 'number') {
 			//otherwise it's 0
-			this.timetag = 0;
+			msg.timetag = 0;
 		}
-		//add the message to the scheduler
-		schedule(this);
-	};
-	//o.msg methods
-	o.msg.prototype = {
-		//invokes the callback if the address matches the pattern
-		match : function(pattern, callback) {
-			if(pattern.test(this.address)) {
-				callback(this);
-				return true;
-			}
-		},
 	};
 }());
