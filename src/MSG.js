@@ -1,12 +1,12 @@
 /*
- * oMSG
+ * MSG
  *
  * OSC-style mediator pattern
  * audio rate scheduler for time crucial messages
  * callback is invoked shortly before it is scheduled and includes the exact scheduling time
  * pattern matching
  */
-( function() {
+ ( function() {
 
 	//create an audio context in the window
 	if( typeof AudioContext == "function") {
@@ -16,6 +16,30 @@
 	}
 	window.audioContext = window.audioContext || ac;
 	var audioContext = window.audioContext;
+
+	//browser doesn't support web audio
+	if (!audioContext){
+		console.log("MSG uses Web Audio for precise timing");
+		//make a shim so that other browsers don't throw errors
+		window.MSG = window.MSG || {
+			schedule : function(){
+
+			},
+			unschedule : function(){
+
+			},
+			route : function(){
+				
+			},
+			unroute : function(){
+				
+			}, 
+			routeOnce : function(){
+
+			}
+		};
+		return;
+	}
 
 	//some audio globals
 	var sampleRate = audioContext.sampleRate;
@@ -56,13 +80,20 @@
 		var len = scheduledMsgs.length;
 		while(insertIndex < len) {
 			var testMsg = scheduledMsgs[insertIndex];
+			//if the next message is bigger, put it right before
 			if(testMsg.timetag >= msg.timetag) {
-				//scheduledMsgs.splice(m - 1, 0, msg);
 				break;
 			}
 			insertIndex++;
 		}
 		scheduledMsgs.splice(insertIndex, 0, msg);
+		return msg;
+	};
+
+	MSG.unschedule = function(msg) {
+		//first check if the msg is in the array
+
+		//else remove the msg(s) with the same address and timetag
 	};
 	/**************************************************************************
 	 ROUTING
@@ -76,24 +107,51 @@
 	MSG.route = function(pattern, callback) {
 		//add a listener to the queue
 		var router = {
-			pattern : regExpFromPattern(pattern),
+			pattern : pattern,
+			regExp : regExpFromPattern(pattern),
 			callback : callback,
 		}
 		routes.push(router);
 		return router;
 	};
+	//like route, but get's removed from the route array after it's routed
+	MSG.routeOnce = function(pattern, callback) {
+		//add a listener to the queue
+		var router = {
+			pattern : pattern,
+			regExp : regExpFromPattern(pattern),
+			callback : callback,
+			once : true,
+		}
+		routes.push(router);
+		return router;
+	};
 	//remove a route from the list
-	MSG.unroute = function(pattern, callback) {
-
+	MSG.unroute = function(router) {
+		for(var i = 0, len = routes.length; i < len; i++) {
+			var testRouter = routes[i];
+			if(testRouter === router) {
+				routes.splice(i, 1);
+				break;
+			}
+		}
 	}
 	//the match function called by the scheduler when a msgs is invoked
 	function match(msg) {
+		var newRoutes = [];
 		for(var r = 0, len = routes.length; r < len; r++) {
 			var router = routes[r];
-			if(router.pattern.test(msg.address)) {
+			if(router.regExp.test(msg.address)) {
 				router.callback(msg);
+				//if it's a 'once', don't add it to the newRoutes list
+				if(!router.once) {
+					newRoutes.push(router);
+				}
+			} else {
+				newRoutes.push(router);
 			}
 		}
+		routes = newRoutes;
 	};
 
 	//translates OSC regular expressions to RegExp
@@ -101,9 +159,9 @@
 		//translate osc-style patterns into RegExp
 		pattern = pattern.replace("*", ".+");
 		pattern = pattern.replace('{', "(");
-		pattern = pattern.replace('}', ")");
-		pattern = pattern.replace(',', "|");
-		pattern = pattern.replace('?', '.');
+			pattern = pattern.replace('}', ")");
+			pattern = pattern.replace(',', "|");
+			pattern = pattern.replace('?', '.');
 		//match '!' only if after '['
 		pattern = pattern.replace('[!', '[^');
 		//add the end-of-line to the pattern so that it stops matching
@@ -139,4 +197,5 @@
 			msg.timetag = 0;
 		}
 	};
+
 }());
