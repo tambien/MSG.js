@@ -8,11 +8,10 @@
  */
  ( function() {
 
-	//create an audio context in the window
-	if( typeof AudioContext == "function") {
-		var ac = new AudioContext();
-	} else if( typeof webkitAudioContext == "function") {
+	if ( window.webkitAudioContext ) {
 		var ac = new webkitAudioContext();
+	} else if ( window.AudioContext ) {
+		var ac = new AudioContext();
 	}
 	window.audioContext = window.audioContext || ac;
 	var audioContext = window.audioContext;
