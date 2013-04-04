@@ -59,8 +59,8 @@
 	//the jsnode which does the schedule loop
 	var scheduler = audioContext.createJavaScriptNode(bufferSize, 1, 1);
 	scheduler.connect(audioContext.destination);
-	//the scheduler loop
-	var schedulerLoop = MSG._scheduler = scheduler.onaudioprocess = function(event) {
+	//the scheduler loop, make it global so safari doesn't garbage collect it
+	_MSGscheduler = scheduler.onaudioprocess = function(event) {
 		//when are they going to implement the playbackTime?
 		var playbackTime = event.playbackTime || audioContext.currentTime;
 		var bufferPeriod = playbackTime + bufferTime;
